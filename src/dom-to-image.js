@@ -571,6 +571,7 @@
 
     function newInliner() {
         var URL_REGEX = /url\(['"]?([^'"]+?)['"]?\)/g;
+        var pathDelimiter = "../";
 
         return {
             inlineAll: inlineAll,
@@ -585,11 +586,22 @@
             return string.search(URL_REGEX) !== -1;
         }
 
+        function cleanPathDelimiter(url) {
+            if(url.indexOf(pathDelimiter) !== -1) {
+                var splitUrlArray = url.split(pathDelimiter);
+                return splitUrlArray[splitUrlArray.length - 1];
+            } else {
+                return url;
+            }
+        }
+
         function readUrls(string) {
             var result = [];
             var match;
+            var url;
             while ((match = URL_REGEX.exec(string)) !== null) {
-                result.push(match[1]);
+                url = match[1];
+                result.push(cleanPathDelimiter(url));
             }
             return result.filter(function (url) {
                 return !util.isDataUrl(url);
